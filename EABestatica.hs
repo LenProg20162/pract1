@@ -36,6 +36,11 @@ vt (xs) (Suma a1 a2) = if ( ((vt xs a1) == TNat) && ((vt xs a2) == TNat) )
   else error ("Los argumentos deben ser tipo TNat")
 vt (xs) (Prod a1 a2) = vt xs (Suma a1 a2)
 vt (xs) (Let (Var z) e1 e2) = vt (xs ++ [(z,t1)]) e2 where t1 = (vt (xs) e1)
-
-
---vt (xs ++ [("e",t1)]) e2 where t1 = (vt (xs) e1)
+vt (xs) (Ifte e1 e2 e3) = if ((vt xs e1) == TBol)
+  then if ((vt xs e2) == (vt xs e3))
+       then vt xs e2
+       else error ("Los tipos de las ramas deben ser iguales")
+  else error ("El tipo de la guardia debe ser booleano")
+vt (xs) (Suc a) = if ((vt xs a) == TNat) then TNat else error ("El argumento debe tener tipo TNat")
+vt (xs) (Pred a) = vt xs (Suc a)
+vt (xs) (Iszero a) = if ((vt xs a) == TBol) then TBol else error ("El argumento debe tener tipo TBol")
