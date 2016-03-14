@@ -22,4 +22,20 @@ type Ctx = [(Ident,Tipo)]
 
 --Implementacion de la semantica estatica (Juicios para tipos)
 vt :: Ctx -> Asa -> Tipo 
-vt = error "Te toca"
+vt (xs) (VNum n) = TNat
+vt (xs) (VBol True) = TBol
+vt (xs) (VBol False) = TBol
+vt [] (Var z) = error ("La variable " ++ show z ++ " no está declarada en el contexto")
+vt (x:xs) (Var z) = if ((null (x:xs)) || ((filter ((==z).fst) (x:xs)) == []))
+  then error ("La variable " ++ show z ++ " no está declarada en el contexto")
+  else if (z == (fst x))
+       then snd(x)
+       else vt xs (Var z)
+vt (xs) (Suma a1 a2) = if ( ((vt xs a1) == TNat) && ((vt xs a2) == TNat) )
+  then TNat
+  else error ("Los argumentos deben ser tipo TNat")
+vt (xs) (Prod a1 a2) = vt xs (Suma a1 a2)
+vt (xs) (Let (Var z) e1 e2) = vt (xs ++ [(z,t1)]) e2 where t1 = (vt (xs) e1)
+
+
+--vt (xs ++ [("e",t1)]) e2 where t1 = (vt (xs) e1)
