@@ -20,7 +20,30 @@ import EABestatica
 --   Sustitución
 -- subst e x r  debe devolver e[x:=r].
 sust :: Asa -> Ident -> Asa -> Asa
-sust = error "Te toca"
+sust (VNum n) x r = VNum n
+sust (VBol b) x r = VBol b
+sust (Var x) y r = if (y == x) then r else (Var x)
+sust (Suma n m) x r = (Suma (sust n x r) (sust m x r))
+sust (Prod n m) x r = (Prod (sust n x r) (sust m x r))
+sust (Let (Var z) e1 e2) x r = if (elem z ([x] ++ freevars r))
+  then error ("Necesito alfa equivalencia")
+  else (Let (Var z) (sust e1 x r) (sust e2 x r))
+sust (Ifte e1 e2 e3) x r = (Ifte (sust e1 x r)(sust e2 x r)(sust e3 x r))
+sust (Suc n) x r = (Suc (sust n x r))
+sust (Pred n) x r = (Pred (sust n x r))
+sust (Iszero n) x r = (Iszero (sust n x r))
+
+freevars :: Asa -> [Ident]
+freevars (VNum n) = []
+freevars (VBol b) = []
+freevars (Var x) = [x]
+freevars (Suma n m) = freevars n ++ freevars m
+freevars (Prod n m) = freevars (Suma n m)
+freevars (Let (Var z) e1 e2) = filter (z/=) (freevars e2)
+freevars (Ifte e1 e2 e3) = freevars e1 ++ freevars e2 ++ freevars e3
+freevars (Suc n) = freevars n
+freevars (Pred n) = freevars n
+freevars (Iszero n) = freevars n
 
 
 --   Valores 
