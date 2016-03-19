@@ -66,7 +66,25 @@ evalaux = error "Te toca"
 -- Reglas de transición
 -- eval1p hace una transición mientras se pueda aplicar una regla de transición.
 eval1p :: Asa -> Asa
-eval1p = error "Te toca"
+eval1p (VBol a) = VBol a
+eval1p (VNum a) = VNum a
+eval1p (Var x) = errror "la variable "++x++"no esta ligada"
+eval1p (Suma (VNum n) (VNum m)) = (Vnum (n+m))
+eval1p (Suma t (VNum m)) = Suma (eval1p t) (VNum m)
+eval1p (Suma t1 t2) = Suma t1 (eval1p t2) 
+eval1p (Prod (VNum n) (VNum m)) = (Vnum (n*m))
+eval1p (Prod t (VNum m)) = Prod (eval1p t)(VNum m)
+eval1p (Prod t1 t2) = Prod (t1)(eval1p t2)
+eval1p (Let (Var x) e1 e2) = (sust e2 (Var x) e1)
+eval1p (Ifte (VBol True) t2 t3) = t2
+eval1p (Ifte (VBol False) t2 t3) = t3
+eval1p (Ifte  t1 t2 t3) = (Ifte  (eval1p t1) t2 t3)
+eval1p (Suc (VNum n)) = (VNum (n+1)) 
+eval1p (Suc t1) = (Suc (eval1p t1))
+eval1p (Pred (VNum n)) = (Pred (n-1)) 
+eval1p (Pred t1) = (Pred (eval1p t1))
+eval1p (Iszero (VNum a)) = if (a == 0) then True else False
+eval1p (Iszero t) = (Iszero (eval1p t)) 
 
 
 -- 5 Pretty printer
