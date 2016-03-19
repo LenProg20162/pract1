@@ -49,7 +49,10 @@ freevars (Iszero n) = freevars n
 --   Valores 
 -- Función que nos dice cuándo una expresión es un valor.
 esvalor :: Asa -> Bool
-esvalor = error "Te toca"
+esvalor (VNum a) = True
+esvalor (VBol a) = True
+esvalor _ = False
+
 
 
 -- Evaluación de expresiones
