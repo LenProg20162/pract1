@@ -58,7 +58,23 @@ esvalor _ = False
 -- Evaluación de expresiones
 -- Evalúa las expresiones que están bien tipadas.
 eval :: Asa -> Asa
-eval = error "Te toca1"
+eval (VNum n) = VNum n
+eval (VBol b) = VBol b
+eval (Var z) = Var z
+eval (Suma (VNum n) (VNum m)) = VNum (n + m)
+eval (Suma n m) = if (((vt [] n) == TNat) && ((vt [] m) == TNat)) then eval (Suma (eval n)(eval m)) else error ("Los agrumentos debes ser tipo TNat")
+eval (Prod (VNum n)(VNum m)) = VNum (n * m)
+eval (Prod n m) = if (((vt [] n) == TNat) && ((vt [] m) == TNat)) then eval (Prod (eval n)(eval m)) else error ("Los agrumentos debes ser tipo TNat")
+eval (Let (Var z) e1 e2) = eval (sust (e2) z (e1))
+eval (Ifte (VBol True) e2 e3) = eval e2
+eval (Ifte (VBol False) e2 e3) = eval e3
+eval (Ifte e1 e2 e3) = if ((vt [] e1) == TBol) then eval(Ifte (eval e1) e2 e3) else error ("La guardia tiene que ser booleana")
+eval (Suc (VNum n)) = VNum (n + 1)
+eval (Suc n) = if (vt [] n == TNat) then eval (Suc (eval n)) else error ("El argumento debe ser tipo TNat")
+eval (Pred (VNum n)) = if (n == 0) then VNum 0 else VNum (n - 1)
+eval (Pred n) = if (vt [] n == TNat) then eval (Pred (eval n)) else error ("El argumento debe ser tipo TNat")
+eval (Iszero (VNum n)) = if (n == 0) then VBol True else VBol False
+eval (Iszero n) = if (vt [] n == TNat) then eval (Iszero (eval n)) else error ("El argumento debe ser tipo TNat")
 
 
 -- evalaux hace transiciones mientras no se llegue a un estado final.
