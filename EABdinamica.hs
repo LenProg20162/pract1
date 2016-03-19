@@ -79,7 +79,7 @@ eval (Iszero n) = if (vt [] n == TNat) then eval (Iszero (eval n)) else error ("
 
 -- evalaux hace transiciones mientras no se llegue a un estado final.
 evalaux :: Asa -> Asa
-evalaux = error "Te toca2"
+evalaux t = if (esvalor t) then t else evalaux(eval1p t) 
 
 
 -- Reglas de transición
